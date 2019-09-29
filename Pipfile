@@ -1,0 +1,20 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+autopep8 = "*"
+
+[packages]
+psutil = "*"
+gevent = "*"
+glob2 = "*"
+netifaces = "*"
+zerorpc = "*"
+flask = "*"
+psdash = {editable = true,path = "."}
+unittest2 = "*"
+
+[requires]
+python_version = "2.7"
