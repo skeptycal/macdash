@@ -42,7 +42,7 @@ class MacDashRunner(object):
         self._setup_logging()
         self._setup_context()
 
-    def _get_args(cls, args):
+    def _get_args(self, args):
         parser = argparse.ArgumentParser(
             description='macdash %s - system information web dashboard' % __version__
         )
@@ -173,7 +173,7 @@ class MacDashRunner(object):
         if not addrs:
             return
 
-        if isinstance(addrs, (str, unicode)):
+        if isinstance(addrs, (str, bytes)):
             app.config[key] = [a.strip() for a in addrs.split(',')]
 
     def _setup_logging(self):

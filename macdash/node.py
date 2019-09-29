@@ -32,7 +32,8 @@ class Node(object):
 
 class RemoteNode(Node):
     def __init__(self, name, host, port):
-        super(RemoteNode, self).__init__()
+        Node.__init__(self, name, host, port)
+        # super(RemoteNode, self).__init__()
         self.name = name
         self.host = host
         self.port = int(port)
@@ -53,8 +54,9 @@ class RemoteNode(Node):
 
 
 class LocalNode(Node):
-    def __init__(self):
-        super(LocalNode, self).__init__()
+    def __init__(self, **args):
+        Node.__init__(self, **args)
+        # super(LocalNode, self).__init__()
         self.name = "MacDash"
         self.net_io_counters = NetIOCounters()
         self.logs = Logs()

@@ -1,5 +1,6 @@
 # coding=utf-8
 import glob2
+from itertools import imap as map  # better map
 import os
 import logging
 
@@ -89,6 +90,9 @@ class ReverseFileSearcher(object):
 class LogReader(object):
     BUFFER_SIZE = 8192
 
+    # def __hash__(self):
+    #     return object.__hash__()
+
     def __init__(self, filename, buffer_size=BUFFER_SIZE):
         self.filename = filename
         self.fp = open(filename, 'r')
@@ -120,7 +124,7 @@ class LogReader(object):
             position in result buffer,
             result buffer (the actual file contents)
         """
-        key = hash(text)
+        key = self.__hash__(self, text)
         searcher = self._searchers.get(key)
         if not searcher:
             searcher = ReverseFileSearcher(self.filename, text)
