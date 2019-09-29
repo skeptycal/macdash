@@ -1,6 +1,8 @@
 # coding=utf-8
 from macdash import __version__
 from setuptools import setup, find_packages
+from Cython.Build import cythonize
+
 
 setup(
     name='macdash',

@@ -15,6 +15,9 @@ psutil = "*"
 zerorpc = "*"
 macdash = {editable = true,path = "."}
 unittest2 = "*"
+ansicolors = "*"
+cython = "*"
+cython-setuptools = "*"
 
 [requires]
 python_version = "2.7"
