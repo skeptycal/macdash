@@ -1,7 +1,7 @@
 # MacDash
 
 [![Build Status](https://travis-ci.com/skeptycal/psdash.svg?branch=master)](https://travis-ci.com/skeptycal/psdash)
-[![Coverage Status](https://coveralls.io/repos/Jahaja/psdash/badge.png?branch=master)](https://coveralls.io/r/skeptycal/psdash?branch=master)
+[![Coverage Status](https://coveralls.io/repos/skeptycal/psdash/badge.png?branch=master)](https://coveralls.io/r/skeptycal/psdash?branch=master)
 
 MacDash is a system information web dashboard for macOS using data mainly served by [psutil](https://github.com/giampaolo/psutil) - hence the name.
 
