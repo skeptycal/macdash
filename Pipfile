@@ -5,16 +5,15 @@ verify_ssl = true
 
 [dev-packages]
 autopep8 = "*"
+pylint = "*"
 
 [packages]
 psutil = "*"
 gevent = "*"
-glob2 = "*"
 netifaces = "*"
 zerorpc = "*"
-flask = "*"
-psdash = {editable = true,path = "."}
-unittest2 = "*"
+Flask = "*"
+build-manpages = "*"
 
 [requires]
 python_version = "2.7"

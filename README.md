@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.com/skeptycal/macdash.svg?branch=master)](https://travis-ci.com/skeptycal/macdash)
 [![Coverage Status](https://coveralls.io/repos/skeptycal/macdash/badge.png?branch=master)](https://coveralls.io/r/skeptycal/macdash?branch=master)
 
-MacDash is a system information web dashboard for macOS using data served by [psutil](https://github.com/giampaolo/psutil) and Flask. It is based on the Linux utility [psdash](https://github.com/Jahaja/psdash).
+MacDash is a system information web dashboard for macOS using data served by [psutil](https://github.com/giampaolo/psutil) and Flask. It is based on the Linux utility [macdash](https://github.com/Jahaja/macdash).
 
 - [MacDash](#macdash)
   - [Features](#features)

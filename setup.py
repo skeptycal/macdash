@@ -1,45 +1,56 @@
 # coding=utf-8
-from psdash import __version__
+from macdash import __version__
 from setuptools import setup, find_packages
+from build_manpages import build_manpages, get_build_py_cmd, get_install_cmd
+from setuptools.command.build_py import build_py
+from setuptools.command.install import install
 
 setup(
-    name='psdash',
+    name='macdash',
     version=__version__,
     description='Linux system information web dashboard',
-    long_description='psdash is a system information web dashboard for linux using data mainly served by psutil',
+    long_description='macdash is a system information web dashboard for linux using data mainly served by psutil',
     classifiers=[
         'Topic :: System :: Monitoring',
         'Topic :: System :: Logging',
         'Topic :: System :: Networking :: Monitoring',
         'Development Status :: 4 - Beta',
-        'Operating System :: POSIX :: Linux',
+        'Environment:: MacOS X',
+        'Framework :: Flask',
+        'Programming Language :: Python :: 3',
+        'Topic :: Scientific/Engineering :: Human Machine Interfaces',
+        'Topic :: Scientific/Engineering :: Visualization',
+        'Operating System :: MacOS',
         'Programming Language :: Python',
-        'License :: Public Domain',
+        'Topic :: Software Development :: Libraries :: Python Modules',
+        'Topic :: System :: Benchmark',
+        'Topic :: System :: Monitoring',
+        'Topic :: Utilities',
+        'License :: OSI Approved :: MIT License',
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators'
     ],
-    keywords='linux web dashboard',
-    author='Joakim Hamrén',
-    author_email='joakim.hamren@gmail.com',
-    url='https://github.com/Jahaja/psdash',
-    license='CC0',
+    keywords='macOS web dashboard',
+    author='Michael Treanor',
+    author_email='skeptycal@gmail.com',
+    url='https://github.com/skeptycal/macdash',
+    license='MIT',
     packages=find_packages(exclude=['tests']),
     include_package_data=True,
     zip_safe=False,
     install_requires=[
         'Flask',
+        'build_manpages',
         'psutil',
-        'glob2',
         'gevent',
         'zerorpc',
         'netifaces',
-        'argparse'
     ],
     test_suite='tests',
     tests_require=['unittest2'],
     entry_points={
         'console_scripts': [
-            'psdash = psdash.run:main'
+            'macdash = macdash.run:main'
         ]
     }
 )

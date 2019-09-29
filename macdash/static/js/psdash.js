@@ -96,7 +96,7 @@ function init_log() {
             $status.show();
         });
     });
-    
+
     $(document).keyup(function(e) {
         var mode = $el.data("mode");
         if(mode != "search" && e.which == 83) {
@@ -124,7 +124,7 @@ function init_updater() {
             cache: false,
             dataType: "html",
             success: function(resp){
-                $("#psdash").find(".main-content").html(resp);
+                $("#macdash").find(".main-content").html(resp);
             }
         });
     }
@@ -133,7 +133,7 @@ function init_updater() {
 }
 
 function init_connections_filter() {
-    var $content = $("#psdash");
+    var $content = $("#macdash");
     $content.on("change", "#connections-form select", function () {
         $content.find("#connections-form").submit();
     });

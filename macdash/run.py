@@ -1,6 +1,6 @@
-from psdash.web import fromtimestamp
-from psdash.node import LocalNode, RemoteNode
-from psdash import __version__
+from macdash.web import fromtimestamp
+from macdash.node import LocalNode, RemoteNode
+from macdash import __version__
 import zerorpc
 from flask import Flask
 from logging import getLogger
@@ -16,10 +16,10 @@ from gevent.monkey import patch_all
 patch_all()
 
 
-logger = getLogger('psdash.run')
+logger = getLogger('macdash.run')
 
 
-class PsDashRunner(object):
+class MacDashRunner(object):
     DEFAULT_LOG_INTERVAL = 60
     DEFAULT_NET_IO_COUNTER_INTERVAL = 3
     DEFAULT_REGISTER_INTERVAL = 60
@@ -44,7 +44,7 @@ class PsDashRunner(object):
 
     def _get_args(cls, args):
         parser = argparse.ArgumentParser(
-            description='psdash %s - system information web dashboard' % __version__
+            description='macdash %s - system information web dashboard' % __version__
         )
         parser.add_argument(
             '-l', '--log',
@@ -52,7 +52,7 @@ class PsDashRunner(object):
             dest='logs',
             default=None,
             metavar='path',
-            help='log files to make available for psdash. Patterns (e.g. /var/log/**/*.log) are supported. '
+            help='log files to make available for macdash. Patterns (e.g. /var/log/**/*.log) are supported. '
                  'This option can be used multiple times.'
         )
         parser.add_argument(
@@ -90,7 +90,7 @@ class PsDashRunner(object):
             dest='register_to',
             default=None,
             metavar='host:port',
-            help='The psdash node running in web mode to register this agent to on start up. e.g 10.0.1.22:5000'
+            help='The macdash node running in web mode to register this agent to on start up. e.g 10.0.1.22:5000'
         )
         parser.add_argument(
             '--register-as',
@@ -107,14 +107,14 @@ class PsDashRunner(object):
         config = {}
         for k, v in vars(self._get_args(args)).iteritems():
             if v:
-                key = 'PSDASH_%s' % k.upper() if k != 'debug' else 'DEBUG'
+                key = 'MACDASH%s' % k.upper() if k != 'debug' else 'DEBUG'
                 config[key] = v
         return config
 
     def _setup_nodes(self):
         self.add_node(LocalNode())
 
-        nodes = self.app.config.get('PSDASH_NODES', [])
+        nodes = self.app.config.get('MACDASH_NODES', [])
         logger.info("Registering %d nodes", len(nodes))
         for n in nodes:
             self.register_node(n['name'], n['host'], int(n['port']))
@@ -145,8 +145,8 @@ class PsDashRunner(object):
 
     def _create_app(self, config=None):
         app = Flask(__name__)
-        app.psdash = self
-        app.config.from_envvar('PSDASH_CONFIG', silent=True)
+        app.macdash = self
+        app.config.from_envvar('MACDASH_CONFIG', silent=True)
 
         if config and isinstance(config, dict):
             app.config.update(config)
@@ -158,8 +158,8 @@ class PsDashRunner(object):
             app.secret_key = 'whatisthissourcery'
         app.add_template_filter(fromtimestamp)
 
-        from psdash.web import webapp
-        prefix = app.config.get('PSDASH_URL_PREFIX')
+        from macdash.web import webapp
+        prefix = app.config.get('MACDASH_URL_PREFIX')
         if prefix:
             prefix = '/' + prefix.strip('/')
         webapp.url_prefix = prefix
@@ -168,7 +168,7 @@ class PsDashRunner(object):
         return app
 
     def _load_allowed_remote_addresses(self, app):
-        key = 'PSDASH_ALLOWED_REMOTE_ADDRESSES'
+        key = 'MACDASH_ALLOWED_REMOTE_ADDRESSES'
         addrs = app.config.get(key)
         if not addrs:
             return
@@ -178,9 +178,9 @@ class PsDashRunner(object):
 
     def _setup_logging(self):
         level = self.app.config.get(
-            'PSDASH_LOG_LEVEL', logging.INFO) if not self.app.debug else logging.DEBUG
+            'MACDASH_LOG_LEVEL', logging.INFO) if not self.app.debug else logging.DEBUG
         format = self.app.config.get(
-            'PSDASH_LOG_FORMAT', '%(levelname)s | %(name)s | %(message)s')
+            'MACDASH_LOG_FORMAT', '%(levelname)s | %(name)s | %(message)s')
 
         logging.basicConfig(
             level=level,
@@ -191,18 +191,18 @@ class PsDashRunner(object):
 
     def _setup_workers(self):
         net_io_interval = self.app.config.get(
-            'PSDASH_NET_IO_COUNTER_INTERVAL', self.DEFAULT_NET_IO_COUNTER_INTERVAL)
+            'MACDASH_NET_IO_COUNTER_INTERVAL', self.DEFAULT_NET_IO_COUNTER_INTERVAL)
         gevent.spawn_later(
             net_io_interval, self._net_io_counters_worker, net_io_interval)
 
-        if 'PSDASH_LOGS' in self.app.config:
+        if 'MACDASH_LOGS' in self.app.config:
             logs_interval = self.app.config.get(
-                'PSDASH_LOGS_INTERVAL', self.DEFAULT_LOG_INTERVAL)
+                'MACDASH_LOGS_INTERVAL', self.DEFAULT_LOG_INTERVAL)
             gevent.spawn_later(logs_interval, self._logs_worker, logs_interval)
 
-        if self.app.config.get('PSDASH_AGENT'):
+        if self.app.config.get('MACDASH_AGENT'):
             register_interval = self.app.config.get(
-                'PSDASH_REGISTER_INTERVAL', self.DEFAULT_REGISTER_INTERVAL)
+                'MACDASH_REGISTER_INTERVAL', self.DEFAULT_REGISTER_INTERVAL)
             gevent.spawn_later(register_interval,
                                self._register_agent_worker, register_interval)
 
@@ -212,15 +212,15 @@ class PsDashRunner(object):
 
     def _setup_context(self):
         self.get_local_node().net_io_counters.update()
-        if 'PSDASH_LOGS' in self.app.config:
+        if 'MACDASH_LOGS' in self.app.config:
             self.get_local_node().logs.add_patterns(
-                self.app.config['PSDASH_LOGS'])
+                self.app.config['MACDASH_LOGS'])
 
     def _logs_worker(self, sleep_interval):
         while True:
             logger.debug("Reloading logs...")
             self.get_local_node().logs.add_patterns(
-                self.app.config['PSDASH_LOGS'])
+                self.app.config['MACDASH_LOGS'])
             gevent.sleep(sleep_interval)
 
     def _register_agent_worker(self, sleep_interval):
@@ -236,24 +236,24 @@ class PsDashRunner(object):
             gevent.sleep(sleep_interval)
 
     def _register_agent(self):
-        register_name = self.app.config.get('PSDASH_REGISTER_AS')
+        register_name = self.app.config.get('MACDASH_REGISTER_AS')
         if not register_name:
             register_name = socket.gethostname()
 
         url_args = {
             'name': register_name,
-            'port': self.app.config.get('PSDASH_PORT', self.DEFAULT_PORT),
+            'port': self.app.config.get('MACDASH_PORT', self.DEFAULT_PORT),
         }
         register_url = '%s/register?%s' % (
-            self.app.config['PSDASH_REGISTER_TO'], urllib.urlencode(url_args))
+            self.app.config['MACDASH_REGISTER_TO'], urllib.urlencode(url_args))
 
-        if 'PSDASH_AUTH_USERNAME' in self.app.config and 'PSDASH_AUTH_PASSWORD' in self.app.config:
+        if 'MACDASH_AUTH_USERNAME' in self.app.config and 'MACDASH_AUTH_PASSWORD' in self.app.config:
             auth_handler = urllib2.HTTPBasicAuthHandler()
             auth_handler.add_password(
-                realm='psDash login required',
+                realm='MacDash login required',
                 uri=register_url,
-                user=self.app.config['PSDASH_AUTH_USERNAME'],
-                passwd=self.app.config['PSDASH_AUTH_PASSWORD']
+                user=self.app.config['MACDASH_AUTH_USERNAME'],
+                passwd=self.app.config['MACDASH_AUTH_PASSWORD']
             )
             opener = urllib2.build_opener(auth_handler)
             urllib2.install_opener(opener)
@@ -267,13 +267,13 @@ class PsDashRunner(object):
     def _run_rpc(self):
         logger.info("Starting RPC server (agent mode)")
 
-        if 'PSDASH_REGISTER_TO' in self.app.config:
+        if 'MACDASH_REGISTER_TO' in self.app.config:
             self._register_agent()
 
         service = self.get_local_node().get_service()
         self.server = zerorpc.Server(service)
-        self.server.bind('tcp://%s:%s' % (self.app.config.get('PSDASH_BIND_HOST', self.DEFAULT_BIND_HOST),
-                                          self.app.config.get('PSDASH_PORT', self.DEFAULT_PORT)))
+        self.server.bind('tcp://%s:%s' % (self.app.config.get('MACDASH_BIND_HOST', self.DEFAULT_BIND_HOST),
+                                          self.app.config.get('MACDASH_PORT', self.DEFAULT_PORT)))
         self.server.run()
 
     def _run_web(self):
@@ -281,15 +281,15 @@ class PsDashRunner(object):
         log = 'default' if self.app.debug else None
 
         ssl_args = {}
-        if self.app.config.get('PSDASH_HTTPS_KEYFILE') and self.app.config.get('PSDASH_HTTPS_CERTFILE'):
+        if self.app.config.get('MACDASH_HTTPS_KEYFILE') and self.app.config.get('MACDASH_HTTPS_CERTFILE'):
             ssl_args = {
-                'keyfile': self.app.config.get('PSDASH_HTTPS_KEYFILE'),
-                'certfile': self.app.config.get('PSDASH_HTTPS_CERTFILE')
+                'keyfile': self.app.config.get('MACDASH_HTTPS_KEYFILE'),
+                'certfile': self.app.config.get('MACDASH_HTTPS_CERTFILE')
             }
 
         listen_to = (
-            self.app.config.get('PSDASH_BIND_HOST', self.DEFAULT_BIND_HOST),
-            self.app.config.get('PSDASH_PORT', self.DEFAULT_PORT)
+            self.app.config.get('MACDASH_BIND_HOST', self.DEFAULT_BIND_HOST),
+            self.app.config.get('MACDASH_PORT', self.DEFAULT_PORT)
         )
         self.server = WSGIServer(
             listen_to,
@@ -300,24 +300,24 @@ class PsDashRunner(object):
         self.server.serve_forever()
 
     def run(self):
-        logger.info('Starting psdash v%s' % __version__)
+        logger.info('Starting macdash v%s' % __version__)
 
         self._setup_locale()
         self._setup_workers()
 
         logger.info('Listening on %s:%s',
-                    self.app.config.get('PSDASH_BIND_HOST',
+                    self.app.config.get('MACDASH_BIND_HOST',
                                         self.DEFAULT_BIND_HOST),
-                    self.app.config.get('PSDASH_PORT', self.DEFAULT_PORT))
+                    self.app.config.get('MACDASH_PORT', self.DEFAULT_PORT))
 
-        if self.app.config.get('PSDASH_AGENT'):
+        if self.app.config.get('MACDASH_AGENT'):
             return self._run_rpc()
         else:
             return self._run_web()
 
 
 def main():
-    r = PsDashRunner.create_from_cli_args()
+    r = MacDashRunner.create_from_cli_args()
     r.run()
 
 

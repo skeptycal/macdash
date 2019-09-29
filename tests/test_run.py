@@ -1,6 +1,6 @@
 import os
-from psdash.run import PsDashRunner
-from psdash.node import LocalNode
+from macdash.run import PsDashRunner
+from macdash.node import LocalNode
 import gevent
 import socket
 import unittest2
@@ -12,15 +12,15 @@ class TestRunner(unittest2.TestCase):
     def test_args_log(self):
         _, filename = tempfile.mkstemp()
         r = PsDashRunner(args=['-l', filename])
-        self.assertEqual(r.app.config['PSDASH_LOGS'][0], filename)
+        self.assertEqual(r.app.config['MACDASH_LOGS'][0], filename)
 
     def test_args_bind(self):
         r = PsDashRunner(args=['-b', '10.0.0.1'])
-        self.assertEqual(r.app.config['PSDASH_BIND_HOST'], '10.0.0.1')
+        self.assertEqual(r.app.config['MACDASH_BIND_HOST'], '10.0.0.1')
 
     def test_args_port(self):
         r = PsDashRunner(args=['-p', '5555'])
-        self.assertEqual(r.app.config['PSDASH_PORT'], 5555)
+        self.assertEqual(r.app.config['MACDASH_PORT'], 5555)
 
     def test_args_debug(self):
         r = PsDashRunner(args=['-d'])
@@ -29,18 +29,19 @@ class TestRunner(unittest2.TestCase):
     def test_default_args_dont_override_config(self):
         _, filename = tempfile.mkstemp()
         with open(filename, "w") as f:
-            f.write("PSDASH_LOGS = ['/var/log/boot.log', '/var/log/dmesg']\n")
+            f.write("MACDASH_LOGS = ['/var/log/boot.log', '/var/log/dmesg']\n")
             f.flush()
-        os.environ['PSDASH_CONFIG'] = filename
+        os.environ['MACDASH_CONFIG'] = filename
         r = PsDashRunner()
-        self.assertEquals(r.app.config['PSDASH_LOGS'], ['/var/log/boot.log', '/var/log/dmesg'])
-        del os.environ['PSDASH_CONFIG']
+        self.assertEquals(r.app.config['MACDASH_LOGS'], [
+                          '/var/log/boot.log', '/var/log/dmesg'])
+        del os.environ['MACDASH_CONFIG']
 
     def test_reload_logs(self):
         _, filename = tempfile.mkstemp()
         r = PsDashRunner(args=['-l', filename])
         pre_count = len(r.get_local_node().logs.available)
-        r.get_local_node().logs.add_patterns(r.app.config['PSDASH_LOGS'])
+        r.get_local_node().logs.add_patterns(r.app.config['MACDASH_LOGS'])
         post_count = len(r.get_local_node().logs.available)
         self.assertEqual(pre_count, post_count)
 
@@ -79,11 +80,11 @@ class TestRunner(unittest2.TestCase):
     def test_get_all_nodes(self):
         r = PsDashRunner()
         r.register_node('examplehost', 'example.org', 5000)
-        self.assertEqual(len(r.get_nodes()), 2) # local + registered
+        self.assertEqual(len(r.get_nodes()), 2)  # local + registered
 
     def test_nodes_from_config(self):
         config = {
-            'PSDASH_NODES': [
+            'MACDASH_NODES': [
                 {
                     'name': 'test-node',
                     'host': 'remotehost.org',
@@ -94,17 +95,19 @@ class TestRunner(unittest2.TestCase):
         r = PsDashRunner(config)
         self.assertEqual(len(r.get_nodes()), 2)
         self.assertIn('remotehost.org:5000', r.get_nodes())
-        self.assertEqual(r.get_nodes()['remotehost.org:5000'].name, 'test-node')
-        self.assertEqual(r.get_nodes()['remotehost.org:5000'].host, 'remotehost.org')
+        self.assertEqual(
+            r.get_nodes()['remotehost.org:5000'].name, 'test-node')
+        self.assertEqual(
+            r.get_nodes()['remotehost.org:5000'].host, 'remotehost.org')
         self.assertEqual(r.get_nodes()['remotehost.org:5000'].port, 5000)
 
     def test_register_agent(self):
         jobs = []
         agent_options = {
-            'PSDASH_AGENT': True,
-            'PSDASH_PORT': 5001,
-            'PSDASH_REGISTER_TO': 'http://localhost:5000',
-            'PSDASH_REGISTER_AS': 'the_agent'
+            'MACDASH_AGENT': True,
+            'MACDASH_PORT': 5001,
+            'MACDASH_REGISTER_TO': 'http://localhost:5000',
+            'MACDASH_REGISTER_AS': 'the_agent'
         }
         r = PsDashRunner()
         agent = PsDashRunner(agent_options)
@@ -123,9 +126,9 @@ class TestRunner(unittest2.TestCase):
 
     def test_register_agent_without_name_defaults_to_hostname(self):
         agent_options = {
-            'PSDASH_AGENT': True,
-            'PSDASH_PORT': 5001,
-            'PSDASH_REGISTER_TO': 'http://localhost:5000'
+            'MACDASH_AGENT': True,
+            'MACDASH_PORT': 5001,
+            'MACDASH_REGISTER_TO': 'http://localhost:5000'
         }
         r = PsDashRunner()
         agent = PsDashRunner(agent_options)
@@ -136,7 +139,8 @@ class TestRunner(unittest2.TestCase):
         gevent.sleep(0.3)
 
         self.assertIn('127.0.0.1:5001', r.get_nodes())
-        self.assertEquals(r.get_node('127.0.0.1:5001').name, socket.gethostname())
+        self.assertEquals(r.get_node('127.0.0.1:5001').name,
+                          socket.gethostname())
         self.assertEquals(r.get_node('127.0.0.1:5001').port, 5001)
 
         r.server.close()
@@ -145,15 +149,15 @@ class TestRunner(unittest2.TestCase):
 
     def test_register_agent_to_auth_protected_host(self):
         r = PsDashRunner({
-            'PSDASH_AUTH_USERNAME': 'user',
-            'PSDASH_AUTH_PASSWORD': 'pass'
+            'MACDASH_AUTH_USERNAME': 'user',
+            'MACDASH_AUTH_PASSWORD': 'pass'
         })
         agent = PsDashRunner({
-            'PSDASH_AGENT': True,
-            'PSDASH_PORT': 5001,
-            'PSDASH_REGISTER_TO': 'http://localhost:5000',
-            'PSDASH_AUTH_USERNAME': 'user',
-            'PSDASH_AUTH_PASSWORD': 'pass'
+            'MACDASH_AGENT': True,
+            'MACDASH_PORT': 5001,
+            'MACDASH_REGISTER_TO': 'http://localhost:5000',
+            'MACDASH_AUTH_USERNAME': 'user',
+            'MACDASH_AUTH_PASSWORD': 'pass'
         })
         jobs = []
         jobs.append(gevent.spawn(r.run))
@@ -162,10 +166,10 @@ class TestRunner(unittest2.TestCase):
         gevent.sleep(0.3)
 
         self.assertIn('127.0.0.1:5001', r.get_nodes())
-        self.assertEquals(r.get_node('127.0.0.1:5001').name, socket.gethostname())
+        self.assertEquals(r.get_node('127.0.0.1:5001').name,
+                          socket.gethostname())
         self.assertEquals(r.get_node('127.0.0.1:5001').port, 5001)
 
         r.server.close()
         agent.server.close()
         gevent.killall(jobs)
-

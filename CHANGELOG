@@ -1,3 +1,32 @@
+--- v1.0.0 [2019-09-12] ---
+* [NEW] Changed a PSDASH_ prefix on all macdash specific configuration options to MACDASH_
+
+* [NEW] Reworked setup.py to change references from psdash to macdash
+
+* [NEW] update classifiers and descriptions to reflect macOS and macdash
+
+* [NEW] update and refactor tests as needed due to dependency update
+
+* [NEW] update dependencies to modern versions to eliminate security issues
+
+* [NEW] dependency management managed by pipenv (automating pip and pyenv)
+
+* [NEW] added [DEV] dependencies autopep8 = "*", pylint = "*"
+
+------------------------------------------------------------------------------
+--- Version 1.0.0
+--- Copyright (c) 2019 Michael Treanor
+--- MacDash <https://github.com/skeptycal/macdash>
+--- * Major refactor to change from Linux focus to macOS focus
+--- * Addition of many new features, many specific to macOS
+--- * Addition of UI design in place of original sample boilerplate
+------------------------------------------------------------------------------
+--- original license was CC0 (1.0) Universal
+--- NO COPYRIGHT
+--- psdash <https://github.com/Jahaja/psdash>
+--- by Joakim Hamrén <https://github.com/Jahaja>
+------------------------------------------------------------------------------
+
 --- v0.6.2 [2015-12-02] ---
 
 * [NEW] Changed gevent version from 1.0.1 to 1.0.2.
@@ -12,7 +41,7 @@
 
 * [FIX] Added a fix for an unhandled error in psutil when the uid of a process is not associated with an user.
 
-* [NEW] Added a whitelist option to make it possible to decide which env vars values to display. 
+* [NEW] Added a whitelist option to make it possible to decide which env vars values to display.
 
 --- v0.6.0 [2014-09-24] ---
 
