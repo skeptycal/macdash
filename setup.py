@@ -37,12 +37,16 @@ setup(
     packages=find_packages(exclude=['tests']),
     include_package_data=True,
     zip_safe=False,
+    ext_modules=cythonize("macdash/*", force=True, annotate=True),
     install_requires=[
         'Flask',
+        'Cython',
         'gevent',
         'netifaces',
         'psutil',
         'zerorpc',
+        'unittest2',
+        'ansicolors'
     ],
     test_suite='tests',
     tests_require=['unittest2'],

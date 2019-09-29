@@ -1,12 +1,15 @@
 .eggs/
 .idea/
 .pypirc
+.pytest_cache/
 .vagrant/
 .vscode/
 *.egg-info
 *.pyc
 *.swp
 *.vim
+bak/
 build/
 dist/
+references/
 tags

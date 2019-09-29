@@ -4,7 +4,7 @@
 
 (return 0 2>/dev/null) && exit 64 # script should not be 'sourced'
 
-declare -i SET_DEBUG=1 # TODO debug verbose
+declare -i SET_DEBUG=0 # set to 1 for verbose debugging info
 ##############################################################################
 # check prerequisite versions
 unset PYTHONDONTWRITEBYTECODE
@@ -23,9 +23,9 @@ if [ $SET_DEBUG == 1 ]; then
     echo "----------------------------------------------"
     echo "Python version (2.7 required):    ${PY_MAJ_VER}.${PY_MIN_VER}"
     echo "Homebrew version (2+ required):   $BREW_VER"
-    echo
-    echo "PYENV: $PYENV_LOADED"
-    echo "VENV: $VIRTUAL_ENV"
+    # echo
+    # echo "PYENV: $PYENV_LOADED"
+    # echo "VENV: $VIRTUAL_ENV"
     echo
     echo "----------------------------------------------"
 fi
