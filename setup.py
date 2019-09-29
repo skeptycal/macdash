@@ -1,7 +1,7 @@
 # coding=utf-8
 from macdash import __version__
 from setuptools import setup, find_packages
-from Cython.Build import cythonize
+# from Cython.Build import cythonize
 
 
 setup(
@@ -37,7 +37,7 @@ setup(
     packages=find_packages(exclude=['tests']),
     include_package_data=True,
     zip_safe=False,
-    ext_modules=cythonize("macdash/*", force=True, annotate=True),
+    # ext_modules=cythonize("macdash/*", force=True, annotate=True),
     install_requires=[
         'Flask',
         'Cython',
