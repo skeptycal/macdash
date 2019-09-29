@@ -173,7 +173,8 @@ class Logs(object):
                 log = self.get(filename)
                 available.append(log)
             except IOError:
-                logger.info('Failed to get "%s", removing from available logs', filename)
+                logger.info(
+                    'Failed to get "%s", removing from available logs', filename)
                 to_remove.append(filename)
 
         if to_remove:

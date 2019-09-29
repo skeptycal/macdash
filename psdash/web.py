@@ -46,6 +46,7 @@ def inject_header_data():
         'uptime': uptime
     }
 
+
 @webapp.url_defaults
 def add_node(endpoint, values):
     values.setdefault('node', g.node)
@@ -61,14 +62,16 @@ def check_access():
     if not current_node:
         return 'Unknown psdash node specified', 404
 
-    allowed_remote_addrs = current_app.config.get('PSDASH_ALLOWED_REMOTE_ADDRESSES')
+    allowed_remote_addrs = current_app.config.get(
+        'PSDASH_ALLOWED_REMOTE_ADDRESSES')
     if allowed_remote_addrs:
         if request.remote_addr not in allowed_remote_addrs:
             current_app.logger.info(
                 'Returning 401 for client %s as address is not in allowed addresses.',
                 request.remote_addr
             )
-            current_app.logger.debug('Allowed addresses: %s', allowed_remote_addrs)
+            current_app.logger.debug(
+                'Allowed addresses: %s', allowed_remote_addrs)
             return 'Access denied', 401
 
     username = current_app.config.get('PSDASH_AUTH_USERNAME')
@@ -187,8 +190,8 @@ def process(pid, section):
 
         whitelist = current_app.config.get('PSDASH_ENVIRON_WHITELIST')
         if whitelist:
-            penviron = dict((k, v if k in whitelist else '*hidden by whitelist*') 
-                             for k, v in penviron.iteritems())
+            penviron = dict((k, v if k in whitelist else '*hidden by whitelist*')
+                            for k, v in penviron.iteritems())
 
         context['process_environ'] = penviron
     elif section == 'threads':
@@ -218,13 +221,14 @@ def view_networks():
     # {'key', 'default_value'}
     # An empty string means that no filtering will take place on that key
     form_keys = {
-        'pid': '', 
+        'pid': '',
         'family': socket_families[socket.AF_INET],
         'type': socket_types[socket.SOCK_STREAM],
         'state': 'LISTEN'
     }
 
-    form_values = dict((k, request.args.get(k, default_val)) for k, default_val in form_keys.iteritems())
+    form_values = dict((k, request.args.get(k, default_val))
+                       for k, default_val in form_keys.iteritems())
 
     for k in ('local_addr', 'remote_addr'):
         val = request.args.get(k, '')
@@ -276,7 +280,8 @@ def view_disks():
 @webapp.route('/logs')
 def view_logs():
     available_logs = current_service.get_logs()
-    available_logs.sort(cmp=lambda x1, x2: locale.strcoll(x1['path'], x2['path']))
+    available_logs.sort(
+        cmp=lambda x1, x2: locale.strcoll(x1['path'], x2['path']))
 
     return render_template(
         'logs.html',
@@ -293,7 +298,8 @@ def view_log():
     session_key = session.get('client_id')
 
     try:
-        content = current_service.read_log(filename, session_key=session_key, seek_tail=seek_tail)
+        content = current_service.read_log(
+            filename, session_key=session_key, seek_tail=seek_tail)
     except KeyError:
         error_msg = 'File not found. Only files passed through args are allowed.'
         if request.is_xhr:
@@ -313,7 +319,8 @@ def search_log():
     session_key = session.get('client_id')
 
     try:
-        data = current_service.search_log(filename, query_text, session_key=session_key)
+        data = current_service.search_log(
+            filename, query_text, session_key=session_key)
         return jsonify(data)
     except KeyError:
         return 'Could not find log file with given filename', 404

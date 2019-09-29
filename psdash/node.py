@@ -157,7 +157,7 @@ class LocalService(object):
         process_list = []
         for p in psutil.process_iter():
             mem = p.memory_info()
-            
+
             # psutil throws a KeyError when the uid of a process is not associated with an user.
             try:
                 username = p.username()
@@ -254,7 +254,8 @@ class LocalService(object):
     def get_process_environment(self, pid):
         with open('/proc/%d/environ' % pid) as f:
             contents = f.read()
-            env_vars = dict(row.split('=', 1) for row in contents.split('\0') if '=' in row)
+            env_vars = dict(row.split('=', 1)
+                            for row in contents.split('\0') if '=' in row)
         return env_vars
 
     def get_process_threads(self, pid):
@@ -345,7 +346,8 @@ class LocalService(object):
                     'mtime': stat.st_mtime
                 })
             except OSError:
-                logger.info('Could not stat "%s", removing from available logs', log.filename)
+                logger.info(
+                    'Could not stat "%s", removing from available logs', log.filename)
                 self.node.logs.remove_available(log.filename)
 
         return available_logs

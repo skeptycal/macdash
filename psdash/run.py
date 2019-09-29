@@ -1,20 +1,19 @@
+from psdash.web import fromtimestamp
+from psdash.node import LocalNode, RemoteNode
+from psdash import __version__
+import zerorpc
+from flask import Flask
+from logging import getLogger
+import urllib2
+import urllib
+import socket
+import logging
+import argparse
+import locale
+from gevent.pywsgi import WSGIServer
 import gevent
 from gevent.monkey import patch_all
 patch_all()
-
-from gevent.pywsgi import WSGIServer
-import locale
-import argparse
-import logging
-import socket
-import urllib
-import urllib2
-from logging import getLogger
-from flask import Flask
-import zerorpc
-from psdash import __version__
-from psdash.node import LocalNode, RemoteNode
-from psdash.web import fromtimestamp
 
 
 logger = getLogger('psdash.run')
@@ -178,26 +177,34 @@ class PsDashRunner(object):
             app.config[key] = [a.strip() for a in addrs.split(',')]
 
     def _setup_logging(self):
-        level = self.app.config.get('PSDASH_LOG_LEVEL', logging.INFO) if not self.app.debug else logging.DEBUG
-        format = self.app.config.get('PSDASH_LOG_FORMAT', '%(levelname)s | %(name)s | %(message)s')
+        level = self.app.config.get(
+            'PSDASH_LOG_LEVEL', logging.INFO) if not self.app.debug else logging.DEBUG
+        format = self.app.config.get(
+            'PSDASH_LOG_FORMAT', '%(levelname)s | %(name)s | %(message)s')
 
         logging.basicConfig(
             level=level,
             format=format
         )
-        logging.getLogger('werkzeug').setLevel(logging.WARNING if not self.app.debug else logging.DEBUG)
-        
+        logging.getLogger('werkzeug').setLevel(
+            logging.WARNING if not self.app.debug else logging.DEBUG)
+
     def _setup_workers(self):
-        net_io_interval = self.app.config.get('PSDASH_NET_IO_COUNTER_INTERVAL', self.DEFAULT_NET_IO_COUNTER_INTERVAL)
-        gevent.spawn_later(net_io_interval, self._net_io_counters_worker, net_io_interval)
+        net_io_interval = self.app.config.get(
+            'PSDASH_NET_IO_COUNTER_INTERVAL', self.DEFAULT_NET_IO_COUNTER_INTERVAL)
+        gevent.spawn_later(
+            net_io_interval, self._net_io_counters_worker, net_io_interval)
 
         if 'PSDASH_LOGS' in self.app.config:
-            logs_interval = self.app.config.get('PSDASH_LOGS_INTERVAL', self.DEFAULT_LOG_INTERVAL)
+            logs_interval = self.app.config.get(
+                'PSDASH_LOGS_INTERVAL', self.DEFAULT_LOG_INTERVAL)
             gevent.spawn_later(logs_interval, self._logs_worker, logs_interval)
 
         if self.app.config.get('PSDASH_AGENT'):
-            register_interval = self.app.config.get('PSDASH_REGISTER_INTERVAL', self.DEFAULT_REGISTER_INTERVAL)
-            gevent.spawn_later(register_interval, self._register_agent_worker, register_interval)
+            register_interval = self.app.config.get(
+                'PSDASH_REGISTER_INTERVAL', self.DEFAULT_REGISTER_INTERVAL)
+            gevent.spawn_later(register_interval,
+                               self._register_agent_worker, register_interval)
 
     def _setup_locale(self):
         # This set locale to the user default (usually controlled by the LANG env var)
@@ -206,12 +213,14 @@ class PsDashRunner(object):
     def _setup_context(self):
         self.get_local_node().net_io_counters.update()
         if 'PSDASH_LOGS' in self.app.config:
-            self.get_local_node().logs.add_patterns(self.app.config['PSDASH_LOGS'])
+            self.get_local_node().logs.add_patterns(
+                self.app.config['PSDASH_LOGS'])
 
     def _logs_worker(self, sleep_interval):
         while True:
             logger.debug("Reloading logs...")
-            self.get_local_node().logs.add_patterns(self.app.config['PSDASH_LOGS'])
+            self.get_local_node().logs.add_patterns(
+                self.app.config['PSDASH_LOGS'])
             gevent.sleep(sleep_interval)
 
     def _register_agent_worker(self, sleep_interval):
@@ -235,7 +244,8 @@ class PsDashRunner(object):
             'name': register_name,
             'port': self.app.config.get('PSDASH_PORT', self.DEFAULT_PORT),
         }
-        register_url = '%s/register?%s' % (self.app.config['PSDASH_REGISTER_TO'], urllib.urlencode(url_args))
+        register_url = '%s/register?%s' % (
+            self.app.config['PSDASH_REGISTER_TO'], urllib.urlencode(url_args))
 
         if 'PSDASH_AUTH_USERNAME' in self.app.config and 'PSDASH_AUTH_PASSWORD' in self.app.config:
             auth_handler = urllib2.HTTPBasicAuthHandler()
@@ -251,7 +261,8 @@ class PsDashRunner(object):
         try:
             urllib2.urlopen(register_url)
         except urllib2.HTTPError as e:
-            logger.error('Failed to register agent to "%s": %s', register_url, e)
+            logger.error('Failed to register agent to "%s": %s',
+                         register_url, e)
 
     def _run_rpc(self):
         logger.info("Starting RPC server (agent mode)")
@@ -295,7 +306,8 @@ class PsDashRunner(object):
         self._setup_workers()
 
         logger.info('Listening on %s:%s',
-                    self.app.config.get('PSDASH_BIND_HOST', self.DEFAULT_BIND_HOST),
+                    self.app.config.get('PSDASH_BIND_HOST',
+                                        self.DEFAULT_BIND_HOST),
                     self.app.config.get('PSDASH_PORT', self.DEFAULT_PORT))
 
         if self.app.config.get('PSDASH_AGENT'):
@@ -307,7 +319,7 @@ class PsDashRunner(object):
 def main():
     r = PsDashRunner.create_from_cli_args()
     r.run()
-    
+
 
 if __name__ == '__main__':
     main()

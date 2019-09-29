@@ -27,12 +27,12 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        'Flask==0.10.1',
-        'psutil==2.1.3',
-        'glob2==0.4.1',
-        'gevent==1.0.2',
-        'zerorpc==0.4.4',
-        'netifaces==0.10.4',
+        'Flask',
+        'psutil',
+        'glob2',
+        'gevent',
+        'zerorpc',
+        'netifaces',
         'argparse'
     ],
     test_suite='tests',
@@ -43,3 +43,13 @@ setup(
         ]
     }
 )
+
+# install_requires=[
+#         'Flask==0.10.1',
+#         'psutil==2.1.3',
+#         'glob2==0.4.1',
+#         'gevent==1.0.2',
+#         'zerorpc==0.4.4',
+#         'netifaces==0.10.4',
+#         'argparse'
+#     ],

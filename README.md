@@ -1,16 +1,17 @@
-# psdash
+# MacDash
 
-[![Build Status](https://travis-ci.org/Jahaja/psdash.svg?branch=master)](https://travis-ci.org/Jahaja/psdash)
-[![Coverage Status](https://coveralls.io/repos/Jahaja/psdash/badge.png?branch=master)](https://coveralls.io/r/Jahaja/psdash?branch=master)
+[![Build Status](https://travis-ci.com/skeptycal/psdash.svg?branch=master)](https://travis-ci.com/skeptycal/psdash)
+[![Coverage Status](https://coveralls.io/repos/Jahaja/psdash/badge.png?branch=master)](https://coveralls.io/r/skeptycal/psdash?branch=master)
 
-psdash is a system information web dashboard for linux using data mainly served by [psutil](https://github.com/giampaolo/psutil) - hence the name.
+MacDash is a system information web dashboard for macOS using data mainly served by [psutil](https://github.com/giampaolo/psutil) - hence the name.
 
-* [Features](#features)
-* [Installation](#installation)
-* [Getting started](#getting-started)
-* [Configuration](#configuration)
-* [Screenshots](#screenshots)
-* [License](#license)
+- [MacDash](#macdash)
+  - [Features](#features)
+  - [Installation](#installation)
+  - [Getting started](#getting-started)
+  - [Configuration](#configuration)
+  - [Screenshots](#screenshots)
+  - [License](#license)
 
 ## Features
 
@@ -106,24 +107,24 @@ e.g: `$ PSDASH_CONFIG=/home/user/config.py psdash`
 
 In addition to the [built-in configuration values that comes with Flask](http://flask.pocoo.org/docs/config/#builtin-configuration-values) there's a number of psdash specific ones as well:
 
-| Name | Description |
-| ---- | ----------- |
-| `PSDASH_AUTH_USERNAME` | When this value and `PSDASH_AUTH_PASSWORD` is set, Basic Authentication will be enabled with the provided credentials. The username of the basic authentication |
-| `PSDASH_AUTH_PASSWORD` | The password of the basic authentication |
-| `PSDASH_ALLOWED_REMOTE_ADDRESSES` | If this is set, only provided ip addresses will be allowed to access psdash. Addresses is separated by a comma. e.g: `PSDASH_ALLOWED_REMOTE_ADDRESSES = "10.0.0.2, 192.29.20.2"` |
-| `PSDASH_URL_PREFIX` | This can be used to make psdash serve from a non-root location. e.g: `PSDASH_URL_PREFIX = "/psdash"` would make psdash serve it's pages from /psdash |
-| `PSDASH_LOG_LEVEL` | The log level set for psdash (passed in to `logging.basicConfig`). *Defaults to `logging.INFO`*. |
-| `PSDASH_LOG_LEVEL` | The log format set for psdash (passed in to `logging.basicConfig`). *Defaults to `%(levelname)s | %(name)s | %(message)s`*. |
-| `PSDASH_NODES` | A list of psDash agent nodes (a dict per node) to register on startup. e.g `[{'name': 'mywebnode', 'host': '10.0.0.2', 'port': 5000}]` |
-| `PSDASH_NET_IO_COUNTER_INTERVAL` | The interval in seconds to update the counters used for calculating network traffic. *Defaults to 3*. |
-| `PSDASH_LOGS_INTERVAL` | The interval in seconds to reapply the log patterns to make sure that file-system changes are applied (log files being created or removed). *Defaults to 60*.
-| `PSDASH_REGISTER_INTERVAL` | The interval in seconds to register the agent to the host psdash node. This is done periodically to be able to determine if any node has gone away and at what time. *Defaults to 60* |
-| `PSDASH_LOGS` | Log patterns to apply at startup. e.g `['/var/log/*.log']`. To override this option using the command-line use the `-l/--log` arg option. |
-| `PSDASH_REGISTER_TO` | When running in agent mode, this is used to set which psdash node to register the agent node to. e.g `http://10.0.20.2:5000`. |
-| `PSDASH_REGISTER_AS` | When running in agent mode, this is used to set the name to register as to the host psdash node specified by `PSDASH_REGISTER_TO`. |
-| `PSDASH_HTTPS_KEYFILE` | Path to the SSL key file to use to enable starting the psdash webserver in HTTPS mode. e.g `/home/user/private.key`
-| `PSDASH_HTTPS_CERTFILE` | Path to the SSL certificate file to use to enable starting the psdash webserver in HTTPS mode. e.g `/home/user/certificate.crt`
-| `PSDASH_ENVIRON_WHITELIST` | If set, only the env vars in this list will be displayed with value. e.g `['HOME']`
+| Name                              | Description                                                                                                                                                                           |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PSDASH_AUTH_USERNAME`            | When this value and `PSDASH_AUTH_PASSWORD` is set, Basic Authentication will be enabled with the provided credentials. The username of the basic authentication                       |
+| `PSDASH_AUTH_PASSWORD`            | The password of the basic authentication                                                                                                                                              |
+| `PSDASH_ALLOWED_REMOTE_ADDRESSES` | If this is set, only provided ip addresses will be allowed to access psdash. Addresses is separated by a comma. e.g: `PSDASH_ALLOWED_REMOTE_ADDRESSES = "10.0.0.2, 192.29.20.2"`      |
+| `PSDASH_URL_PREFIX`               | This can be used to make psdash serve from a non-root location. e.g: `PSDASH_URL_PREFIX = "/psdash"` would make psdash serve it's pages from /psdash                                  |
+| `PSDASH_LOG_LEVEL`                | The log level set for psdash (passed in to `logging.basicConfig`). *Defaults to `logging.INFO`*.                                                                                      |
+| `PSDASH_LOG_LEVEL`                | The log format set for psdash (passed in to `logging.basicConfig`). *Defaults to `%(levelname)s | %(name)s | %(message)s`*.                                                           |
+| `PSDASH_NODES`                    | A list of psDash agent nodes (a dict per node) to register on startup. e.g `[{'name': 'mywebnode', 'host': '10.0.0.2', 'port': 5000}]`                                                |
+| `PSDASH_NET_IO_COUNTER_INTERVAL`  | The interval in seconds to update the counters used for calculating network traffic. *Defaults to 3*.                                                                                 |
+| `PSDASH_LOGS_INTERVAL`            | The interval in seconds to reapply the log patterns to make sure that file-system changes are applied (log files being created or removed). *Defaults to 60*.                         |
+| `PSDASH_REGISTER_INTERVAL`        | The interval in seconds to register the agent to the host psdash node. This is done periodically to be able to determine if any node has gone away and at what time. *Defaults to 60* |
+| `PSDASH_LOGS`                     | Log patterns to apply at startup. e.g `['/var/log/*.log']`. To override this option using the command-line use the `-l/--log` arg option.                                             |
+| `PSDASH_REGISTER_TO`              | When running in agent mode, this is used to set which psdash node to register the agent node to. e.g `http://10.0.20.2:5000`.                                                         |
+| `PSDASH_REGISTER_AS`              | When running in agent mode, this is used to set the name to register as to the host psdash node specified by `PSDASH_REGISTER_TO`.                                                    |
+| `PSDASH_HTTPS_KEYFILE`            | Path to the SSL key file to use to enable starting the psdash webserver in HTTPS mode. e.g `/home/user/private.key`                                                                   |
+| `PSDASH_HTTPS_CERTFILE`           | Path to the SSL certificate file to use to enable starting the psdash webserver in HTTPS mode. e.g `/home/user/certificate.crt`                                                       |
+| `PSDASH_ENVIRON_WHITELIST`        | If set, only the env vars in this list will be displayed with value. e.g `['HOME']`                                                                                                   |
 
 ## Screenshots
 
