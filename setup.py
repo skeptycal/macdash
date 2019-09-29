@@ -37,7 +37,6 @@ setup(
     zip_safe=False,
     install_requires=[
         'Flask',
-        'build_manpages',
         'psutil',
         'gevent',
         'zerorpc',
